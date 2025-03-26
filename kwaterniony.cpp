@@ -1,107 +1,84 @@
 #include <iostream>
 #include <ostream>
+/*
+ Dzien dobry, 
+ generalnie wkurwia mnie tutaj kilka rzeczy wiec sugeruje swoje poprawki w tym kodzie, Który uważam za wybitny ale za duzo jest tu napisane a ja mam autyzm i sie przestymulowywuje. 
 
-class kwaternion{
+ 1. usunałem wszystkie get itd, ja nawet nie wiem jak to wczesniej działało bo nie rozumiem totalnie, ciaglłe odwoływanie sie do get i set jest mylące i nadprogramowe IMO. 
+ 2. dodałem skibidi() do pokazywania kwaternionu by nie dodawać operatora << bo po do skoro mozna fresh zrobić. ale rozumiem idee, 
+ 3. zrobiłem jednostkowy kwaternion `jednostkowy()`, by sprawdzić sobie czy działa, ale zostawie ci. 
+ 4.  wyciszylem float kwa_matrix().
+ 5. no i oczywiscie zmieniłem klase na pisaną dużą literą. 
+
+A więc teraz klasa działa tak. 
+
+a) 
+const Kwaternion foo(1,2,3,4); 
+// wewnatrz klasy uruchamia sie i ustawia wszystkie wartosci na podane
+// a,b,c,d = 1,2,3,4 < - podstawia takie coś w miejsca poprzednich zer patrz.  referencja_1
+// i to juz tyle, potem poprostu mozesz robić rzeczy, robienie tych get i set było boring. 
+ */
+class Kwaternion{
     private:
         float a, b, c, d;
     public:
-        kwaternion();
-        kwaternion(float,float,float,float);
-        float kwa_matrix();
+      // I TERAZ MASZ JUZ KWATERION KTÓRY jak jest tworzony i dajesz mu jakies wartosci abcd 
+      // to on je ma i nie trzeba sie bawic w settery i gettery. Szczerze mówiać ja nawet nie wiem jak uzywać set i get dlatego to zmieniam.
+      Kwaternion(): a(0), b(0),c(0),d(0){};//ustawia defaultowe wartosci   referencja_1
+  //zmienia defaultowe wartosci na te podane 
+      Kwaternion(float a,float b,float c,float d): a(a), b(b), c(c), d(d){};
 
-        float get_a();
-        float get_b();
-        float get_c();
-        float get_d();
+         // float kwa_matrix(); // wykomentowałem to bo narazie nie uzywane.
 
-        void set_a(float);
-        void set_b(float);
-        void set_c(float);
-        void set_d(float);
+        //funkcja dodana do robienia poważnych rzeczy a nie get
+        //get some bitches better a nie ciagle get get get/ 
+  
 
-        friend kwaternion operator*(kwaternion & H1,kwaternion & H2);
-        friend kwaternion operator+(kwaternion & H1,kwaternion & H2);
+      void skibidi() const {
+        std::cout << a << " + " << b << "i + " << c << "j + " << d << "k" << std::endl;
+      }
+      //pa jakie fajne
+      static Kwaternion jednostkowy(){
+        return Kwaternion(1, 0, 0, 0);
+      }
+      friend Kwaternion operator+(const Kwaternion& H1, const Kwaternion& H2) {
+        return Kwaternion(
+            H1.a + H2.a,
+            H1.b + H2.b,
+            H1.c + H2.c,
+            H1.d + H2.d
+        );
+    }
 
+    friend Kwaternion operator*(const Kwaternion& H1, const Kwaternion& H2) {
+        return Kwaternion(
+            H1.a * H2.a - H1.b * H2.b - H1.c * H2.c - H1.d * H2.d,
+            H1.a * H2.b + H1.b * H2.a + H1.c * H2.d - H1.d * H2.c,
+            H1.a * H2.c + H1.c * H2.a + H1.d * H2.b - H1.b * H2.d,
+            H1.a * H2.d + H1.d * H2.a + H1.b * H2.c - H1.c * H2.b
+        );
+    }
+        // zobacz ze wyzej zrobiłem operator kwaternionu juz jako friend   
+        //friend kwaternion operator*(kwaternion & H1,kwaternion & H2);
+        //friend kwaternion operator+(kwaternion & H1,kwaternion & H2);
 
 };
 
-kwaternion::kwaternion(float x,float y,float z,float t){
-    a = x;
-    b = y;
-    c = z;
-    d = t;
-}
-
-kwaternion::kwaternion(){
-    a = 0;
-    b = 0;
-    c = 0;
-    d = 0;
-}
-
-float kwaternion::get_a(){
-    return a;
-}
-
-float kwaternion::get_b(){
-    return b;
-}
-
-float kwaternion::get_c(){
-    return c;
-}
-
-float kwaternion::get_d(){
-    return d;
-}
-
-void kwaternion::set_a(float x){
-    a = x;
-}
-
-void kwaternion::set_b(float x){
-    b = x;
-}
-
-void kwaternion::set_c(float x){
-    c = x;
-}
-
-void kwaternion::set_d(float x){
-    d = x;
-}
-
-
-//dodawanie kwaterionów
-kwaternion operator+(kwaternion & H1, kwaternion & H2){
-    kwaternion HD(H1.a+H2.a, H1.b+H2.b, H1.c+H2.c, H1.c+H2.c);
-    return HD;
-}
-
-//mnożenie kwaterionów
-kwaternion operator*(kwaternion & H1, kwaternion & H2){
-    kwaternion HD;
-    HD.set_a(H1.a * H2.a - H1.b * H2.b - H1.c * H2.c - H1.d * H2.d);
-    HD.set_b(H1.a * H2.b + H1.b * H2.a + H1.c * H2.d - H1.d * H2.c);
-    HD.set_c(H1.a * H2.c + H1.c * H2.a + H1.d * H2.b - H1.b * H2.d);
-    HD.set_d(H1.a * H2.d + H1.d * H2.a + H1.b * H2.c - H1.c * H2.b);
-    return HD;
-}
-
-std::ostream & operator<< (std::ostream &wyjscie, kwaternion z){
-    return wyjscie <<  z.get_a() << " + " <<  z.get_b() << "i + " <<  z.get_c() << "j + " <<  z.get_d() << "k"<<"\n";
-}
 
 int main() {
-    kwaternion h1(2.0, 4.0, 6.0, 7.0);
-    kwaternion h2(2.0, 7.0, 8.0, 9.0);
-    std::cout << h1 << "\n";
-    std::cout << h2 << "\n";
-    kwaternion h3 = h1*h2;
-    std::cout << h3 << "\n";
-
-
+    Kwaternion h1(2.0, 4.0, 6.0, 7.0);
+    Kwaternion h2(2.0, 7.0, 8.0, 9.0);
+    //std::cout << h1 << "\n";
+    //std::cout << h2 << "\n";
+    Kwaternion h3 = h1*h2;
+    //std::cout << h3 << "\n";
+    h1.skibidi(); 
+    h2.skibidi();
+    std::cout<<"Wynik mnozenia: ";
+    h3.skibidi();
+    Kwaternion defaultowy = Kwaternion::jednostkowy();  
+    std::cout<<"Jednostkowy: ";
+    defaultowy.skibidi();
     std::cout << "Mam dosc windowsa";
     return 0;
-
 }
